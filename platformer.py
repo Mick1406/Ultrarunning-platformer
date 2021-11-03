@@ -14,23 +14,29 @@ clock = pygame.time.Clock()
 background_image = pygame.image.load('images/Full-Background.png')
 
 # Player parameters
-player_image = pygame.image.load('images/runner_00.png')
+player_image = pygame.image.load('images/runner_01.png')
 player_x = 20
 player_y = 500
+player_width = 52
+player_height = 72
 player_speed = 0
 player_acceleration = 0.1
 
 # Burgers
+burger_image = pygame.image.load('images/burger.png')
+burgers = [pygame.Rect(220, 500, 32, 32), pygame.Rect(740, 350, 32, 32)]
 
 
+#-----------------------------------------------------------
 # Start the game loop
+#-----------------------------------------------------------
 running = True
 while running:
 
     #----------------------------------------------------------------
     # Input
     #----------------------------------------------------------------
-    
+
     # Check for quit
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -72,10 +78,30 @@ while running:
     else:
         player_y == 500
 
+
+    # Collect burgers
+    player_rect = pygame.Rect(player_x, player_y, player_width, player_height)
+    for b in burgers:
+        if b.colliderect(player_rect):
+            burgers.remove(b)
+
+    #----------------------------------------------------------------
     # Draw
+    #----------------------------------------------------------------
+
+    # Background
     screen.fill(DARK_GREY)
     screen.blit(background_image, (0,142))
+
+    # Player
     screen.blit(player_image, (player_x,player_y))
+    
+    # Burgers
+    for b in burgers:
+        screen.blit(burger_image, (b[0], b[1]))
+
+
+    # Present screen
     pygame.display.flip()
 
     clock.tick(60)
