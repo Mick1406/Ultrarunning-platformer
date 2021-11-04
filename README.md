@@ -6,4 +6,4 @@ A video game about ultra running!
 Just make sure to avoid treacharous rock piles.
 <br> 
 <br>
-![alt text](https://github.com/Mick1406/Ultrarunning-platformer/blob/master/Screenshot.jpg?raw=true)
+![Screenshot](Screenshot.png)
