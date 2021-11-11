@@ -33,6 +33,7 @@ player_width = 52
 player_height = 72
 player_speed = 0
 player_acceleration = 0.1
+player_direction = 'right'
 
 # Burgers
 burger_image = pygame.image.load('images/burger.png')
@@ -43,10 +44,17 @@ burger_collected = 0
 rocks_image = pygame.image.load('images/Rock_Pile.png')
 rocks = [pygame.Rect(320, 550, 42, 42)]
 
+# Finish line
+finish_image = pygame.image.load('images/finish.png')
+finish = [pygame.Rect(808, 390, 262, 262)]
+
 # Energy score and number of lives
 energy = 10 
 lives = 3
 heart_image = pygame.image.load('images/Heart.png')
+
+# Flask of water
+finish_image = pygame.image.load('images/flask.png')
 
 #-----------------------------------------------------------
 # Start the game loop
@@ -75,9 +83,11 @@ while running:
         if keys[pygame.K_LEFT]:
             new_player_x -= 2
             energy -= 0.017
+            player_direction = 'left'
         if keys[pygame.K_RIGHT]:
             new_player_x += 2
             energy -= 0.017
+            player_direction = 'right'
         if keys[pygame.K_UP]:
             new_player_y -= 1
             energy -= 0.01
@@ -121,7 +131,7 @@ while running:
                 print(energy)
                 # Change the game state if no lives remaining
         
-        if burger_collected >= 2 and energy>0 and player_x > 990:
+        if burger_collected >= 2 and energy>0 and player_x >= 880:
             game_state = 'win'
 
         # Hit obstacles
@@ -129,7 +139,6 @@ while running:
             if r.colliderect(player_rect):
                 lives -= 1
                 # Reset player position and energy after losing a life
-                print('You lost one life!')
                 player_x = 20
                 player_y = 500
                 player_speed = 0
@@ -142,7 +151,6 @@ while running:
         if energy <= 0:
             lives -= 1
             # Reset player position and energy after losing a life
-            print('You lost one life!')
             player_x = 20
             player_y = 500
             player_speed = 0
@@ -163,8 +171,11 @@ while running:
     if game_state == 'playing':
 
         # Player
-        screen.blit(player_image, (player_x,player_y))
-        
+        if player_direction == 'right':
+            screen.blit(player_image, (player_x,player_y))
+        elif player_direction == 'left':
+            screen.blit(pygame.transform.flip(player_image, True, False), (player_x,player_y))
+            
         # Burgers
         for b in burgers:
             screen.blit(burger_image, (b[0], b[1]))
@@ -182,10 +193,15 @@ while running:
             screen.blit(heart_image, (900 + (l*30), 6))
 
 
+        # Finish License
+        screen.blit(finish_image, (finish[0][0],finish[0][1]))
+        
+    # Display game status when either finished or no more lives
     if game_state == 'lose':
         drawText('You lost! DNF', 400, 250)
     elif game_state == 'win':
         drawText('Congrats! You are a finisher!', 310, 250)
+
 
     # Present screen
     pygame.display.flip()
