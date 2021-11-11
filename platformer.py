@@ -1,4 +1,5 @@
 import pygame
+import engine
 
 # Helper functions 
 def drawText(t, x, y):
@@ -22,6 +23,9 @@ font = pygame.font.Font(pygame.font.get_default_font(), 24)
 # Game states (playing / winning / losing)
 game_state = 'playing'
 
+# Set entities
+entities = []
+
 # Background
 background_image = pygame.image.load('images/Full-Background.png')
 
@@ -33,12 +37,43 @@ player_width = 52
 player_height = 72
 player_speed = 0
 player_acceleration = 0.1
-player_direction = 'right'
+player_direction = 'right' # or 'left'
+player_state = 'idle' # or 'running'
+player_animations = {'idle': engine.Animation([
+                        pygame.image.load('images/runner_00.png'),
+                        pygame.image.load('images/runner_01.png'),
+                        pygame.image.load('images/runner_02.png'),
+                        pygame.image.load('images/runner_03.png'),
+                        pygame.image.load('images/runner_04.png')
+                     ]),
+                     'running': engine.Animation([
+                         pygame.image.load('images/runner_08.png'),
+                         pygame.image.load('images/runner_09.png'),
+                         pygame.image.load('images/runner_10.png'),
+                         pygame.image.load('images/runner_11.png'),
+                         pygame.image.load('images/runner_12.png'),
+                         pygame.image.load('images/runner_13.png'),
+                         pygame.image.load('images/runner_14.png'),
+                         pygame.image.load('images/runner_15.png'),
+                         pygame.image.load('images/runner_16.png'),
+                         pygame.image.load('images/runner_17.png'),
+                         pygame.image.load('images/runner_18.png'),
+                     ])}
 
 # Burgers
 burger_image = pygame.image.load('images/burger.png')
 burgers = [pygame.Rect(220, 500, 32, 32), pygame.Rect(740, 350, 32, 32)]
 burger_collected = 0
+
+burger1 = engine.Entity()
+burger1.position = engine.Position(220, 500, 32, 32)
+
+burger2 = engine.Entity()
+burger2.position = engine.Position(740, 350, 32, 32)
+
+entities.append(burger1)
+entities.append(burger2)
+
 
 # Rocks
 rocks_image = pygame.image.load('images/Rock_Pile.png')
@@ -54,7 +89,7 @@ lives = 3
 heart_image = pygame.image.load('images/Heart.png')
 
 # Flask of water
-finish_image = pygame.image.load('images/flask.png')
+flask_image = pygame.image.load('images/flask.png')
 
 #-----------------------------------------------------------
 # Start the game loop
@@ -84,10 +119,12 @@ while running:
             new_player_x -= 2
             energy -= 0.017
             player_direction = 'left'
+            player_state = 'running'
         if keys[pygame.K_RIGHT]:
             new_player_x += 2
             energy -= 0.017
             player_direction = 'right'
+            player_state = 'running'
         if keys[pygame.K_UP]:
             new_player_y -= 1
             energy -= 0.01
@@ -96,12 +133,18 @@ while running:
             new_player_y += 2
             energy -= 0.01
             player_speed -= player_acceleration
+        if not keys[pygame.K_DOWN] and keys[pygame.K_UP] and keys[pygame.K_RIGHT] and keys[pygame.K_LEFT]:
+            player_state = 'idle'
    
     #----------------------------------------------------------------
     # Update
     #----------------------------------------------------------------
 
     if game_state == 'playing':
+        
+        # Update player Animation
+        player_animations[player_state].update()
+        
         # Horizontal movement / position not out of bounds
         # if in bounds
         if new_player_x >= 0 and new_player_x <=1000:
@@ -172,21 +215,28 @@ while running:
 
         # Player
         if player_direction == 'right':
-            screen.blit(player_image, (player_x,player_y))
+            # screen.blit(player_image, (player_x,player_y))
+            player_animations[player_state].draw(screen, player_x, player_y, False, False)
         elif player_direction == 'left':
-            screen.blit(pygame.transform.flip(player_image, True, False), (player_x,player_y))
+            # screen.blit(pygame.transform.flip(player_image, True, False), (player_x,player_y))
+            player_animations[player_state].draw(screen, player_x, player_y, True, False)
             
         # Burgers
-        for b in burgers:
-            screen.blit(burger_image, (b[0], b[1]))
+        # for b in burgers:
+        #     screen.blit(burger_image, (b[0], b[1]))
 
+        for entity in entities:
+            if entity.position is not None:
+                screen.blit(burger_image, (entity.position.rect.x, entity.position.rect.y))
+        
         # Rocks
         for r in rocks:
             screen.blit(rocks_image, (r[0], r[1]))
 
         # Player information display
         # Energy left
-        drawText('Energy left: ' + str(round(energy)), 10, 10)
+        screen.blit(flask_image, (10,10))
+        drawText(str(round(energy)), 50, 18)
 
         # Lives
         for l in range(lives):
