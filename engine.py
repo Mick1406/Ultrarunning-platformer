@@ -6,6 +6,21 @@ class Position():
     
     def __init__(self, x, y, w, h):
         self.rect = pygame.Rect(x, y, w, h)
+        self.isJump = False
+        self.jumpCount = 10
+         
+    def jump(self):
+        if self.isJump:
+            if self.jumpCount >= -10:
+                neg = 1
+                if self.jumpCount < 0:
+                    neg = -1
+                self.y -= self.jumpCount**2 * 0.1 * neg
+                self.jumpCount -= 1
+            else:
+                self.isJump = False
+                self.jumpCount = 10    
+
 
 # Animations
 class Animations():
@@ -15,6 +30,7 @@ class Animations():
         
     def add(self, state, animation):
             self.animationList[state] = animation
+            
 
 
 class Animation():

@@ -38,7 +38,7 @@ player_height = 72
 player_speed = 0
 player_acceleration = 0.1
 player_direction = 'right' # or 'left'
-player_state = 'idle' # or 'running'
+player_state = 'idle' # or 'running' or jumping
 player_animations = {'idle': engine.Animation([
                         pygame.image.load('images/runner_00.png'),
                         pygame.image.load('images/runner_01.png'),
@@ -55,24 +55,27 @@ player_animations = {'idle': engine.Animation([
                          pygame.image.load('images/runner_13.png'),
                          pygame.image.load('images/runner_14.png'),
                          pygame.image.load('images/runner_15.png'),
+                     ]),
+                     'jumping': engine.Animation([
                          pygame.image.load('images/runner_16.png'),
                          pygame.image.load('images/runner_17.png'),
-                         pygame.image.load('images/runner_18.png'),
-                     ])}
+                         pygame.image.load('images/runner_18.png')
+                     ])
+                     }
 
 # Burgers
 burger_image = pygame.image.load('images/burger.png')
 burgers = [pygame.Rect(220, 500, 32, 32), pygame.Rect(740, 350, 32, 32)]
 burger_collected = 0
 
-burger1 = engine.Entity()
-burger1.position = engine.Position(220, 500, 32, 32)
+# burger1 = engine.Entity()
+# burger1.position = engine.Position(220, 500, 32, 32)
 
-burger2 = engine.Entity()
-burger2.position = engine.Position(740, 350, 32, 32)
+# burger2 = engine.Entity()
+# burger2.position = engine.Position(740, 350, 32, 32)
 
-entities.append(burger1)
-entities.append(burger2)
+# entities.append(burger1)
+# entities.append(burger2)
 
 
 # Rocks
@@ -90,6 +93,13 @@ heart_image = pygame.image.load('images/Heart.png')
 
 # Flask of water
 flask_image = pygame.image.load('images/flask.png')
+
+# Platform (ground for running) - matching background platform
+ground = [pygame.Rect(0, 390, 1000, 290)]
+
+# Load and play uusic of the game
+pygame.mixer.music.load('sounds/hold the line.ogg')
+pygame.mixer.music.play(-1)
 
 #-----------------------------------------------------------
 # Start the game loop
@@ -116,12 +126,12 @@ while running:
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_LEFT]:
-            new_player_x -= 2
+            new_player_x -= 3
             energy -= 0.017
             player_direction = 'left'
             player_state = 'running'
         if keys[pygame.K_RIGHT]:
-            new_player_x += 2
+            new_player_x += 3
             energy -= 0.017
             player_direction = 'right'
             player_state = 'running'
@@ -135,6 +145,11 @@ while running:
             player_speed -= player_acceleration
         if not keys[pygame.K_DOWN] and keys[pygame.K_UP] and keys[pygame.K_RIGHT] and keys[pygame.K_LEFT]:
             player_state = 'idle'
+            
+        # Jumps
+        if keys[pygame.K_SPACE]:
+            player_state = 'jumping'
+            engine.Position.isJump = True
    
     #----------------------------------------------------------------
     # Update
@@ -154,7 +169,7 @@ while running:
 
         # Vertical movement 
         player_speed += player_acceleration
-        # new_player_y +=  player_speed
+        #new_player_y +=  player_speed
 
         if new_player_y != player_y and new_player_y >= 0 and new_player_y <= 800:
             player_y = new_player_y #- player_speed
@@ -222,12 +237,12 @@ while running:
             player_animations[player_state].draw(screen, player_x, player_y, True, False)
             
         # Burgers
-        # for b in burgers:
-        #     screen.blit(burger_image, (b[0], b[1]))
+        for b in burgers:
+            screen.blit(burger_image, (b[0], b[1]))
 
-        for entity in entities:
-            if entity.position is not None:
-                screen.blit(burger_image, (entity.position.rect.x, entity.position.rect.y))
+        # for entity in entities:
+        #     if entity.position is not None:
+        #         screen.blit(burger_image, (entity.position.rect.x, entity.position.rect.y))
         
         # Rocks
         for r in rocks:
