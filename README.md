@@ -12,4 +12,4 @@ Just make sure to avoid treacharous rock piles.
 ### Credits
 - Most of the assets are from [OpenGameArt.org](https://opengameart.org)
 - [Piskel](https://www.piskelapp.com/p/create/sprite) was used for creating the finish line asset 
-- GIMP was used to re-sized and croped images
+- GIMP was used to re-size and crop images
