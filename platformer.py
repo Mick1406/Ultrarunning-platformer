@@ -18,7 +18,8 @@ pygame.init()
 screen = pygame.display.set_mode(SCREEN_SIZE)
 pygame.display.set_caption("The Bearded Ultra Runner")
 clock = pygame.time.Clock()
-font = pygame.font.Font(pygame.font.get_default_font(), 24)
+pygame.mixer.pre_init(44100, -16, 2, 512)
+pygame.mixer.set_num_channels(64)
 
 # Game states (playing / winning / losing)
 game_state = 'playing'
@@ -143,13 +144,15 @@ while running:
             new_player_y += 2
             energy -= 0.01
             player_speed -= player_acceleration
-        if not keys[pygame.K_DOWN] and keys[pygame.K_UP] and keys[pygame.K_RIGHT] and keys[pygame.K_LEFT]:
-            player_state = 'idle'
-            
-        # Jumps
+                # Jumps
         if keys[pygame.K_SPACE]:
             player_state = 'jumping'
             engine.Position.isJump = True
+            
+        if not keys[pygame.K_DOWN] and keys[pygame.K_UP] and keys[pygame.K_RIGHT] and keys[pygame.K_LEFT]:
+            player_state = 'idle'
+            
+
    
     #----------------------------------------------------------------
     # Update
