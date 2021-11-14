@@ -15,7 +15,8 @@ YELLOW = (255,204,0)
 
 # Initialize the game
 pygame.init()
-screen = pygame.display.set_mode(SCREEN_SIZE)
+screen = pygame.Surface(SCREEN_SIZE) # screen for drawing
+display_screen = pygame.display.set_mode(flags = pygame.FULLSCREEN) # scaled for display
 pygame.display.set_caption("The Bearded Ultra Runner")
 pygame.font.init()
 font = pygame.font.Font(pygame.font.get_default_font(), 24)
@@ -42,6 +43,8 @@ player_speed = 0
 player_acceleration = 0.1
 player_direction = 'right' # or 'left'
 player_state = 'idle' # or 'running' or jumping
+screen_traveled = 0
+screen_total = 2
 player_animations = {'idle': engine.Animation([
                         pygame.image.load('images/runner_00.png'),
                         pygame.image.load('images/runner_01.png'),
@@ -161,7 +164,7 @@ while running:
     #----------------------------------------------------------------
 
     if game_state == 'playing':
-        
+
         # Update player Animation
         player_animations[player_state].update()
         
@@ -170,7 +173,13 @@ while running:
         if new_player_x >= 0 and new_player_x <=1000:
             player_x = new_player_x
         else:
-            player_x == 0
+            player_x = 0
+            screen_traveled += 1
+            # refesh burgers
+            if not burgers:
+              burgers = [pygame.Rect(220, 500, 32, 32), pygame.Rect(740, 350, 32, 32)]
+
+        in_final_screen = screen_traveled == screen_total
 
         # Vertical movement 
         player_speed += player_acceleration
@@ -194,7 +203,7 @@ while running:
                 print(energy)
                 # Change the game state if no lives remaining
         
-        if burger_collected >= 2 and energy>0 and player_x >= 880:
+        if in_final_screen and burger_collected >= 2 and energy>0 and player_x >= 880:
             game_state = 'win'
 
         # Hit obstacles
@@ -233,6 +242,7 @@ while running:
     
     if game_state == 'playing':
 
+
         # Player
         if player_direction == 'right':
             # screen.blit(player_image, (player_x,player_y))
@@ -264,7 +274,8 @@ while running:
 
 
         # Finish License
-        screen.blit(finish_image, (finish[0][0],finish[0][1]))
+        if in_final_screen:
+            screen.blit(finish_image, (finish[0][0],finish[0][1]))
         
     # Display game status when either finished or no more lives
     if game_state == 'lose':
@@ -272,6 +283,12 @@ while running:
     elif game_state == 'win':
         drawText('Congrats! You are a finisher!', 310, 250)
 
+    # scale
+
+    pygame.Surface(SCREEN_SIZE)
+    scaled_screen = pygame.transform.smoothscale(screen, display_screen.get_size())
+
+    display_screen.blit(scaled_screen, (0,0))
 
     # Present screen
     pygame.display.flip()
