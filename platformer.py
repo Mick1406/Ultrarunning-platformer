@@ -13,7 +13,7 @@ SCREEN_SIZE = (1000,800)
 DARK_GREY = (50,50,50)
 YELLOW = (255,204,0)
 
-# Initialize the game
+# Initialization
 pygame.init()
 screen = pygame.Surface(SCREEN_SIZE) # screen for drawing
 display_screen = pygame.display.set_mode(flags = pygame.FULLSCREEN) # scaled for display
