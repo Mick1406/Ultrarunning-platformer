@@ -1,6 +1,5 @@
 import pygame
 
-
 # Positions 
 class Position():
     
